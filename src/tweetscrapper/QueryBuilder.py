@@ -116,7 +116,7 @@ class QueryBuilder:
              otherwise the number is set to class count property. Defaults to None.
 
         Returns:
-            str: _description_
+            str: Complete url string to query for specified conversation ID.
         """
         if max_results is not None:
             count = max_results
