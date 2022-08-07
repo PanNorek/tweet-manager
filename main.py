@@ -1,4 +1,4 @@
-from src.AuthorizationManager.AuthorizationManager import AuthorizationManager
+from src.tweetscrapper.AuthorizationManager import AuthorizationManager
 
 
 
@@ -10,7 +10,7 @@ def main():
     #get authorization token from json file
     authorize = AuthorizationManager('api_keys.json').get_bearer_token()
 
-
+    
     print(authorize)
 
 

@@ -1,12 +1,10 @@
 import unittest
 
 
-from src.AuthorizationManager.AuthorizationManager import *
+from src.tweetscrapper.AuthorizationManager import *
 
 
 class TestAuthorizationManager(unittest.TestCase):
-    # test_json_filename = r'E:\coding\pythonnew\newscrapper\your_api_keys_sample.json'
-    test_json_filename = '../your_api_keys_sample.json'
     instance = AuthorizationManager()
 
     def test_access_token(self):
