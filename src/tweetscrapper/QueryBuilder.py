@@ -57,7 +57,7 @@ class QueryBuilder:
 
 
     def get_by_hashtag(self, hashtag:str) -> str:
-        """Generate an API request by selecting a hashtag.
+        """Generate an API request string by selecting a hashtag.
 
         Args:
             hashtag (str): hashtag or phrase to be found 
@@ -84,7 +84,7 @@ class QueryBuilder:
         
 
     def get_by_acc_name(self, name:str) -> str:
-        """Generate an API request by selecting an user
+        """Generate an API request string by selecting an user
 
         Args:
             name (str): Matches any Tweet from a specific user.
@@ -93,6 +93,7 @@ class QueryBuilder:
         Returns:
             str: Complete url string to query for specified user.
         """
+
         default_string = 'https://api.twitter.com/2/tweets/search/recent?query='
         specified_string = 'from:' + name
         #get only 'original' tweets
@@ -106,7 +107,29 @@ class QueryBuilder:
 
 
 
-    def get_replies_from_tweet(self, tweet_id):
-        raise NotImplementedError
+    def get_replies_from_tweet(self, conversation_id:int, max_results:int = None) -> str:
+        """Generate an API request string that matches Tweets that share a common conversation ID.
+
+        Args:
+            conversation_id (int): single conversation ID
+            max_results (int, optional): specify the maximum replies got by query,
+             otherwise the number is set to class count property. Defaults to None.
+
+        Returns:
+            str: _description_
+        """
+        if max_results is not None:
+            count = max_results
+        else:
+            count = self.count
+        
+        default_string = 'https://api.twitter.com/2/tweets/search/recent?query='
+        specified_string = 'conversation_id:' + str(conversation_id)
+        #convert an url string to safe characters
+        specified_string = urllib.parse.quote_plus(specified_string)
+        #add query filters
+        specified_string += f'&max_results={count}&sort_order=recency&tweet.fields=created_at,public_metrics&expansions=author_id'
+        
+        return default_string + specified_string 
     
 
