@@ -3,8 +3,6 @@ from src.tweetscrapper.QueryBuilder import QueryBuilder
 
 
 
-
-
 def main():
     """ Main program """
     #get authorization token from json file
@@ -13,7 +11,7 @@ def main():
     
     print(authorize)
     print(query)
-
+    
 
 
 
