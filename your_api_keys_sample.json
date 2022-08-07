@@ -1,0 +1,8 @@
+{   
+    "API_Key": "longstringhere",
+    "API_Key_Secret":"verylongstringhere",
+    "Bearer_Token":"veryverylongstringhere",
+    "Access_Token":"verylongstringhere",
+    "Access_Token_Secret":"verylongstringhere",
+    "App_ID":"somenumbershere"
+}
