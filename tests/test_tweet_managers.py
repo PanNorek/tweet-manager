@@ -36,3 +36,8 @@ class TestTweetManagers(unittest.TestCase):
         self.assertIsInstance(meta, dict)
         self.assertEqual(len(meta) != 0, True)
 
+    def test_get_conversation_ids(self):
+        path_to_json = r'E:\coding\pythonnew\tweet-manager\data2.json'
+        conversation_ids = get_conversation_ids(path_to_json)
+        self.assertIsInstance(conversation_ids, list)
+        self.assertEqual(len(conversation_ids) != 0, True)

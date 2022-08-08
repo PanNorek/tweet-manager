@@ -7,7 +7,6 @@ import os
 
 class AuthorizationManager:
     '''Simple class to get the keys  from a json file'''
-    json_filename:str = 'your_api_keys_sample.json'
     # path_to_json_file:str = r'E:\coding\pythonnew\tweet-manager\your_api_keys_sample.json'
     
 

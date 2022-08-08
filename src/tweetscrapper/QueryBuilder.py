@@ -4,7 +4,7 @@ import urllib.parse
 #  https://ceo.com.pl/ranking-popularnosci-polskich-politykow-na-twitterze-74439
 
 
-LANG = 'pl'
+# LANG = 'pl'
 # urllib.parse.quote_plus(query)
 
 class QueryBuilder:
@@ -16,7 +16,7 @@ class QueryBuilder:
     # https://developer.twitter.com/en/docs/twitter-api/v1/tweets/search/api-reference/get-search-tweets
     
     
-    def __init__(self, lang: str = LANG, count = 10) -> None:
+    def __init__(self, lang: str, count = 10) -> None:
         self._lang = lang
         self.count = count
 
