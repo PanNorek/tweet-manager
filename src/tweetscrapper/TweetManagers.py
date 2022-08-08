@@ -128,7 +128,7 @@ def get_replies(auth_header:dict, conversation_id:str, max_results:int, lang:str
         # print('Error for hashtag {}!'.format(hashtag))
         raise ConnectionError
     
-    #Flatten nested dictionary
+    # Flatten nested dictionary
     data = [flatten(tweet_data) for tweet_data in response.json()["data"]]
 
     # with open('data3.json', 'w', encoding='utf-8') as f:

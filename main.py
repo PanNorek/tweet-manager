@@ -1,11 +1,11 @@
 from src.tweetscrapper.AuthorizationManager import AuthorizationManager
-from src.tweetscrapper.QueryBuilder import QueryBuilder
 from src.tweetscrapper.TweetManagers import *
 import os
 import sys
 import getopt
 import configparser
 import time
+import json
 
 
 def main():
@@ -17,18 +17,18 @@ def main():
     splash_screen()
 
     # Get config path from arguments
-    all_args = sys.argv[1:]    
+    all_args = sys.argv[1:]
     try:
         opts, arg = getopt.getopt(all_args, 'c:')
     except getopt.GetoptError:
         opts = []
-    
+
     arg_config_path = ''
     for o in opts:
-        if o[0]=='-c':
+        if o[0] == '-c':
             arg_config_path = o[1]    
-    
-    if arg_config_path=='':
+
+    if arg_config_path == '':
         info('Configuration file not specified - I cannot continue :(\n')
         info('usage: main.py -c <config_path>\n(eg. main.py -c config.ini)')
         wait_for_enter('\nPress Enter to exit.')
@@ -37,9 +37,7 @@ def main():
     # Read and prepare config    
     info(f'Configuration file: {arg_config_path}')
     try:
-        configs_raw = config_read(config_path = arg_config_path)
-
-
+        configs_raw = config_read(config_path=arg_config_path)
 
         configs = config_add_dtypes(configs_raw)
         num_configs = len(configs)
@@ -54,19 +52,19 @@ def main():
     # problem_idx = config_sanity_check(configs) 
     # TODO: write sanity check function
 
-    problem_idx = -1 
-    if problem_idx>-1:
+    problem_idx = -1
+    if problem_idx > -1:
         info('\n\nInvalid configuration detected:')
         show_config(configs[problem_idx])
         wait_for_enter('\nFix the problem and restart.\nPress Enter to exit.')
         app_exit()
     
     # Activate single-file or batch mode
-    if num_configs==0:
+    if num_configs == 0:
         # 0 configs - Should never reach this point. This should have been handled in sanity check.
         info('(No config, no job)')
     
-    elif num_configs==1:
+    elif num_configs == 1:
         # 1 config - Single file mode - detailed info
         config = configs[0]
         info('(Single file mode)')
@@ -76,25 +74,26 @@ def main():
         # notTODO: _______(Optional) Display WARNING if output file exists
         wait_for_enter('Press Enter to continue (or close the window to abort)')
         tweet_manager_core(config, app_settings, verbose=True, overwrite=True)
-        
 
     else:
         # 2 and more configs - Batch mode - general info instead of a detailed one
         info('(Batch mode)')
         raise NotImplementedError
 
+
 def settings_read(config_path):
     """
     Read application settings from INI file
                 
     """       
-    num_params=['job_exec_time']    
+    num_params = ['job_exec_time']    
     app_settings = config_read(config_path, num_params=num_params)
     app_settings = app_settings[0]
     
     return app_settings
 
-def config_read(config_path='config.ini', num_params = []):
+
+def config_read(config_path='config.ini', num_params=[]):
     """
     Read job configuration from INI file
                 
@@ -118,6 +117,7 @@ def config_read(config_path='config.ini', num_params = []):
     
     else:
         raise Exception(f"Config file '{config_path}' does not exist")
+
 
 def splash_screen():  
     '''
@@ -151,9 +151,11 @@ def splash_screen():
                               '''                              
     print(S)    
 
+
 def version():
     """ Application version """    
     return '1.0.0 (beta)'  # (Major.Minor.Bugfix, update when needed) 
+
 
 def info(*args, **kwargs):
     '''
@@ -162,6 +164,7 @@ def info(*args, **kwargs):
     '''
     
     print(*args, **kwargs)
+
 
 def cinfo(flag, *args, **kwargs):
     '''
@@ -173,6 +176,7 @@ def cinfo(flag, *args, **kwargs):
     if flag:
         info(*args, **kwargs)
 
+
 def wait_for_enter(prompt='Press Enter to continue...'):
     '''
     Wait for (input and) pressing Enter
@@ -180,6 +184,7 @@ def wait_for_enter(prompt='Press Enter to continue...'):
     '''    
     info(prompt)
     return input()     
+
 
 def app_exit():
     '''
@@ -216,6 +221,7 @@ def show_config(config):
     for k in config.keys():
         info(f'    {k} = {config[k]}')
 
+
 def output_prepare_path(config, start_dir):
     '''
     Prepare absolute output path (config['output_path'] may be absolute or relative)
@@ -224,13 +230,11 @@ def output_prepare_path(config, start_dir):
     If it is relative, calculate it's absolute form using start_dir as a start.
     '''    
     if 'hashtag' in config.keys():
-        tag_dict = {'<mode>': 'Hashtag-' + config['hashtag'] ,
-                '<max_results>': 'Results-' + str(config['max_results']),
-                }
+        tag_dict = {'<mode>': 'Hashtag-' + config['hashtag'],
+             '<max_results>': 'Results-' + str(config['max_results'])}
     elif 'account_name' in config.keys():
         tag_dict = {'<mode>': 'Account-' + config['account_name'],
-                '<max_results>': 'Results-' + str(config['max_results']),
-                }
+             '<max_results>': 'Results-' + str(config['max_results'])}
     
     cfg_output_path = config['output_path']
     
@@ -260,12 +264,11 @@ def tweet_manager_core(config, app_settings, verbose, overwrite):
         'error:abc...' - the same as above but with a more detailed error information ('abc...')
     '''   
      
-
     # ============== 1. Read Tweeter API keys ==============
     tic = time.time()
     auth = AuthorizationManager(config['keys_path']).get_bearer_token()
     toc = time.time()
-    cinfo(verbose, 'OK (%.3f seconds)'%(toc - tic)) 
+    cinfo(verbose, 'OK (%.3f seconds)' % (toc - tic)) 
     # ============== 2. Do processing ==============
     cinfo(verbose, 'Processing... ', end='') 
     
@@ -275,9 +278,9 @@ def tweet_manager_core(config, app_settings, verbose, overwrite):
     elif 'account_name' in config.keys():
         data, _ = get_tweets_by_acc_name(auth, config['account_name'], config['max_results'], app_settings['lang'])
     else:
-        raise Exception #program can only get tweet by either hashtag or account name
+        raise Exception  # Program can only get tweet by either hashtag or account name
     toc = time.time()
-    cinfo(verbose, 'OK (%.3f seconds)'%(toc - tic))
+    cinfo(verbose, 'OK (%.3f seconds)' % (toc - tic))
     # ============== 3. Write outputs ==============
     cinfo(verbose, 'Writing output... ', end='', flush=True) 
     tic = time.time()
@@ -286,7 +289,6 @@ def tweet_manager_core(config, app_settings, verbose, overwrite):
     
     with open(output_path, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
-
 
 
 if __name__ == '__main__':
