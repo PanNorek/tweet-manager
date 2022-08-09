@@ -2,7 +2,6 @@ from src.tweetscrapper.QueryBuilder import QueryBuilder
 # from src.tweetscrapper.AuthorizationManager import AuthorizationManager
 from typing import Tuple
 import requests
-import json
 import collections
 
 # auth_header = AuthorizationManager('api_keys.json').get_bearer_token()
@@ -61,7 +60,8 @@ def get_json_tweets_by_hashtag(
     response = requests.get(url, headers=auth_header)
 
     if response.status_code != 200:
-        # print('Error for hashtag {}!'.format(hashtag))
+        print('Error for hashtag: {}!'.format(hashtag))
+        print(f'Response failed with code: {response.status_code}')
         raise ConnectionError
 
     # Flatten nested dictionary
@@ -99,7 +99,8 @@ def get_tweets_by_acc_name(
     response = requests.get(url, headers=auth_header)
 
     if response.status_code != 200:
-        # print('Error for hashtag {}!'.format(hashtag))
+        print('Error for account name: {}!'.format(name))
+        print(f'Response failed with code: {response.status_code}')
         raise ConnectionError
 
     # Flatten nested dictionary
@@ -140,22 +141,17 @@ def get_replies(
     response = requests.get(url, headers=auth_header)
 
     if response.status_code != 200:
-        # print('Error for hashtag {}!'.format(hashtag))
+        print('Error for conversation_id {}!'.format(conversation_id))
+        print(f'Response failed with code: {response.status_code}')
         raise ConnectionError
 
     # Flatten nested dictionary
     data = [flatten(tweet_data) for tweet_data in response.json()["data"]]
 
-    # with open('data3.json', 'w', encoding='utf-8') as f:
-    #     json.dump(data, f, ensure_ascii=False, indent=4)
-
-    # with open('meta3.json', 'w', encoding='utf-8') as f:
-    #     json.dump(response.json()["meta"], f, ensure_ascii=False, indent=4)
-
     return data, response.json()["meta"]
 
 
-def get_conversation_ids(path_to_json: str) -> list:
+def get_conversation_ids(data: list) -> list:
     """_summary_
 
     Args:
@@ -164,8 +160,7 @@ def get_conversation_ids(path_to_json: str) -> list:
     Returns:
         list: _description_
     """
-    with open(path_to_json, 'r', encoding='utf-8') as f:
-        data = json.load(f)
+
     return [tweet['conversation_id'] for tweet in data]
 
 
