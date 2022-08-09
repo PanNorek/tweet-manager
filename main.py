@@ -81,7 +81,25 @@ def main():
     else:
         # 2 and more configs - Batch mode - general info instead of a detailed one
         info('(Batch mode)')
-        raise NotImplementedError
+        est_time = num_configs*app_settings['job_exec_time']
+        info(f'\nEstimated total time: {est_time:.0f} seconds')
+        info('')
+        # notTODO: Display WARNING if output files exist
+        wait_for_enter('Press Enter to continue (or close the window to abort)')
+        progress_bar(0, num_configs)
+        # stats = {'ok': 0, 'error': 0, 'skipped': 0}
+        # TODO: add statistics
+        tic = time.time()
+        for i, config in enumerate(configs):
+            tweet_manager_core(config, app_settings, verbose=True, overwrite=True)
+            # time.sleep(0.5)
+            progress_bar(i+1, num_configs,
+                         msg=f"{config['account_name'] if 'account_name' in config.keys() else config['hashtag']}, {'with_replies' if config['all_conversation'] else 'no_replies'} ") #  TODO: -> {result}
+
+        toc = time.time()
+        total_time = toc-tic
+        progress_bar(num_configs, num_configs, msg=f'Done ({total_time:.1f} seconds)') 
+        info('')
 
 
 def settings_read(config_path):
@@ -94,6 +112,39 @@ def settings_read(config_path):
     app_settings = app_settings[0]
 
     return app_settings
+
+
+def progress_bar(i, total, msg=''):
+
+    bar_width = 80
+
+    # Prepare new bar's content
+    # 1. Progress info
+    head = f'{i/total:>4.0%} ({i}/{total})'
+    # 2. Message
+    tail = msg
+
+    #      msg = 'Hello little flower...'
+    # long msg = 'Hello little flower, its very nice to meet you, bla, bla, blabla, bla, blabla, bla, blabla, bla, bla... This is the end'
+
+    # pad or crop tail, to get head+tail with length=bar_width
+    hlen = len(head)
+    tlen = bar_width-hlen-1   # -1 because of space separating head and tail
+    # msglen = len(msg)
+
+    tail = tail.ljust(tlen, ' ')  # pad
+    tail = tail[:tlen]           # crop
+
+    pbar = head+' '+tail         # 'pbar' because 'bar' is blacklisted in pylint
+
+    if len(pbar) == bar_width:
+        pass  # ok
+    else:
+        print('\n\nbar length', len(pbar))
+        raise Exception('WTF bar?')
+
+    # Return the carriage and print new
+    print(f'\r{pbar}', end='', flush=True)
 
 
 def config_read(config_path='config.ini', num_params=[]):
@@ -233,11 +284,11 @@ def output_prepare_path(config, start_dir):
     If it is relative, calculate it's absolute form using start_dir as a start.
     '''
     if 'hashtag' in config.keys():
-        tag_dict = {'<date>': datetime.now().strftime('%m/%d/%Y'),
+        tag_dict = {'<date>': datetime.datetime.now().strftime('%m-%d-%Y'),
                     '<mode>': config['hashtag'],
                     '<max_results>': str(config['max_results'])}
     elif 'account_name' in config.keys():
-        tag_dict = {'<date>': datetime.now().strftime('%m/%d/%Y'),
+        tag_dict = {'<date>': datetime.datetime.now().strftime('%m-%d-%Y'),
                     '<mode>': config['account_name'],
                     '<max_results>': str(config['max_results'])}
 
