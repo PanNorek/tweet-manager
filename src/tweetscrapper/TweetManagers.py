@@ -1,10 +1,9 @@
 from src.tweetscrapper.QueryBuilder import QueryBuilder
-from src.tweetscrapper.AuthorizationManager import AuthorizationManager
+# from src.tweetscrapper.AuthorizationManager import AuthorizationManager
 from typing import Tuple
 import requests
 import json
 import collections
-import pandas as pd
 
 # auth_header = AuthorizationManager('api_keys.json').get_bearer_token()
 # max_results = 10
@@ -39,7 +38,12 @@ def flatten(d, parent_key='', sep='_'):
             items.append((new_key, v))
     return dict(items)
 
-def get_json_tweets_by_hashtag(auth_header:dict, hashtag:str, max_results:int, lang:str) -> Tuple[list, dict]:
+
+def get_json_tweets_by_hashtag(
+    auth_header: dict,
+    hashtag: str,
+    max_results: int,
+        lang: str) -> Tuple[list, dict]:
     """_summary_
 
     Args:
@@ -51,28 +55,31 @@ def get_json_tweets_by_hashtag(auth_header:dict, hashtag:str, max_results:int, l
     Returns:
         Tuple[list, dict]: _description_
     """
-    
+
     url = QueryBuilder(lang, max_results).get_by_hashtag(hashtag)
 
     response = requests.get(url, headers=auth_header)
 
-
     if response.status_code != 200:
         # print('Error for hashtag {}!'.format(hashtag))
         raise ConnectionError
-    
-    #Flatten nested dictionary
+
+    # Flatten nested dictionary
     data = [flatten(tweet_data) for tweet_data in response.json()["data"]]
 
     # with open('data.json', 'w', encoding='utf-8') as f:
     #     json.dump(data, f, ensure_ascii=False, indent=4)
-    
+
     # with open('meta.json', 'w', encoding='utf-8') as f:
     #     json.dump(response.json()["meta"], f, ensure_ascii=False, indent=4)
     return data, response.json()["meta"]
 
 
-def get_tweets_by_acc_name(auth_header:dict, name:str, max_results:int, lang:str) -> Tuple[list, dict]:
+def get_tweets_by_acc_name(
+    auth_header: dict,
+    name: str,
+    max_results: int,
+        lang: str) -> Tuple[list, dict]:
     """_summary_
 
     Args:
@@ -95,17 +102,22 @@ def get_tweets_by_acc_name(auth_header:dict, name:str, max_results:int, lang:str
         # print('Error for hashtag {}!'.format(hashtag))
         raise ConnectionError
 
-    #Flatten nested dictionary
+    # Flatten nested dictionary
     data = [flatten(tweet_data) for tweet_data in response.json()["data"]]
 
     # with open('data2.json', 'w', encoding='utf-8') as f:
     #     json.dump(data, f, ensure_ascii=False, indent=4)
-    
+
     # with open('meta2.json', 'w', encoding='utf-8') as f:
     #     json.dump(response.json()["meta"], f, ensure_ascii=False, indent=4)
     return data, response.json()["meta"]
 
-def get_replies(auth_header:dict, conversation_id:str, max_results:int, lang:str) -> Tuple[list, dict]:
+
+def get_replies(
+    auth_header: dict,
+    conversation_id: str,
+    max_results: int,
+        lang: str) -> Tuple[list, dict]:
     """_summary_
 
     Args:
@@ -120,26 +132,30 @@ def get_replies(auth_header:dict, conversation_id:str, max_results:int, lang:str
     Returns:
         Tuple[list, dict]: _description_
     """
-    url = QueryBuilder(lang, max_results).get_replies_from_tweet(conversation_id, max_results)
+    url = (QueryBuilder(lang, max_results)
+           .get_replies_from_tweet(
+                conversation_id,
+                max_results))
 
     response = requests.get(url, headers=auth_header)
 
     if response.status_code != 200:
         # print('Error for hashtag {}!'.format(hashtag))
         raise ConnectionError
-    
+
     # Flatten nested dictionary
     data = [flatten(tweet_data) for tweet_data in response.json()["data"]]
 
     # with open('data3.json', 'w', encoding='utf-8') as f:
     #     json.dump(data, f, ensure_ascii=False, indent=4)
-    
+
     # with open('meta3.json', 'w', encoding='utf-8') as f:
     #     json.dump(response.json()["meta"], f, ensure_ascii=False, indent=4)
 
     return data, response.json()["meta"]
 
-def get_conversation_ids(path_to_json:str) ->list:
+
+def get_conversation_ids(path_to_json: str) -> list:
     """_summary_
 
     Args:
@@ -153,10 +169,9 @@ def get_conversation_ids(path_to_json:str) ->list:
     return [tweet['conversation_id'] for tweet in data]
 
 
-
-
 def extract_text():
     raise NotImplementedError
+
 
 def anonymize_mentions():
     raise NotImplementedError
