@@ -1,9 +1,11 @@
 import unittest
 from src.tweetscrapper.TweetManagers import *
+from src.tweetscrapper.AuthorizationManager import AuthorizationManager
 
 auth_header = AuthorizationManager('api_keys.json').get_bearer_token()
 max_results = 10
 lang = 'pl'
+
 
 class TestTweetManagers(unittest.TestCase):
     def test_get_tweets_by_hashtag(self):
@@ -25,7 +27,7 @@ class TestTweetManagers(unittest.TestCase):
 
         self.assertIsInstance(meta, dict)
         self.assertEqual(len(meta) != 0, True)
-    
+
     def test_get_replies(self):
         conversation_id = 1556279401582661633
         data, meta = get_replies(auth_header, conversation_id, max_results, lang)
@@ -36,7 +38,7 @@ class TestTweetManagers(unittest.TestCase):
         self.assertIsInstance(meta, dict)
         self.assertEqual(len(meta) != 0, True)
 
-    def test_get_conversation_ids(self):
+    def test_get_conversation_ids(self):  # this could fail, no sample file with conversation id in repo
         path_to_json = r'E:\coding\pythonnew\tweet-manager\data2.json'
         conversation_ids = get_conversation_ids(path_to_json)
         self.assertIsInstance(conversation_ids, list)

@@ -67,11 +67,6 @@ def get_json_tweets_by_hashtag(
     # Flatten nested dictionary
     data = [flatten(tweet_data) for tweet_data in response.json()["data"]]
 
-    # with open('data.json', 'w', encoding='utf-8') as f:
-    #     json.dump(data, f, ensure_ascii=False, indent=4)
-
-    # with open('meta.json', 'w', encoding='utf-8') as f:
-    #     json.dump(response.json()["meta"], f, ensure_ascii=False, indent=4)
     return data, response.json()["meta"]
 
 
@@ -106,11 +101,6 @@ def get_tweets_by_acc_name(
     # Flatten nested dictionary
     data = [flatten(tweet_data) for tweet_data in response.json()["data"]]
 
-    # with open('data2.json', 'w', encoding='utf-8') as f:
-    #     json.dump(data, f, ensure_ascii=False, indent=4)
-
-    # with open('meta2.json', 'w', encoding='utf-8') as f:
-    #     json.dump(response.json()["meta"], f, ensure_ascii=False, indent=4)
     return data, response.json()["meta"]
 
 
@@ -135,8 +125,8 @@ def get_replies(
     """
     url = (QueryBuilder(lang, max_results)
            .get_replies_from_tweet(
-                conversation_id,
-                max_results))
+            conversation_id,
+            max_results))
 
     response = requests.get(url, headers=auth_header)
 

@@ -13,6 +13,8 @@ import json
 def main():
     """ Main program """
     settings_path = 'settings.ini'
+    OUTPUT_PATH = 'outputs'
+    OUTPUT_FILENAME = 'merged.json'
 
     app_settings = settings_read(settings_path)
 
@@ -79,9 +81,9 @@ def main():
         tweet_manager_core(config, app_settings, verbose=True, overwrite=True)
 
     else:
-        # 2 and more configs - Batch mode - general info instead of a detailed one
+        # 2 and more configs - Batch mode
         info('(Batch mode)')
-        est_time = num_configs*app_settings['job_exec_time']
+        est_time = num_configs * app_settings['job_exec_time']
         info(f'\nEstimated total time: {est_time:.0f} seconds')
         info('')
         # notTODO: Display WARNING if output files exist
@@ -93,12 +95,15 @@ def main():
         for i, config in enumerate(configs):
             tweet_manager_core(config, app_settings, verbose=True, overwrite=True)
             # time.sleep(0.5)
-            progress_bar(i+1, num_configs,
-                         msg=f"{config['account_name'] if 'account_name' in config.keys() else config['hashtag']}, {'with_replies' if config['all_conversation'] else 'no_replies'} ") #  TODO: -> {result}
+            progress_bar(i + 1, num_configs,
+                         msg=f"{config['account_name'] if 'account_name' in config.keys() else config['hashtag']},"
+                         f" {'with_replies' if config['all_conversation'] else 'no_replies'} ")  # TODO: -> {result}
+
+        merge_json_files(OUTPUT_PATH, OUTPUT_FILENAME)
 
         toc = time.time()
-        total_time = toc-tic
-        progress_bar(num_configs, num_configs, msg=f'Done ({total_time:.1f} seconds)') 
+        total_time = toc - tic
+        progress_bar(num_configs, num_configs, msg=f'Done ({total_time:.1f} seconds)')
         info('')
 
 
@@ -125,17 +130,17 @@ def progress_bar(i, total, msg=''):
     tail = msg
 
     #      msg = 'Hello little flower...'
-    # long msg = 'Hello little flower, its very nice to meet you, bla, bla, blabla, bla, blabla, bla, blabla, bla, bla... This is the end'
+    # long msg = 'Hello little flower, its very nice to meet you, bla, blabla, bla, blabla, bla, bla.. This is the end'
 
     # pad or crop tail, to get head+tail with length=bar_width
     hlen = len(head)
-    tlen = bar_width-hlen-1   # -1 because of space separating head and tail
+    tlen = bar_width - hlen - 1   # -1 because of space separating head and tail
     # msglen = len(msg)
 
     tail = tail.ljust(tlen, ' ')  # pad
     tail = tail[:tlen]           # crop
 
-    pbar = head+' '+tail         # 'pbar' because 'bar' is blacklisted in pylint
+    pbar = head + ' ' + tail         # 'pbar' because 'bar' is blacklisted in pylint
 
     if len(pbar) == bar_width:
         pass  # ok
@@ -306,6 +311,24 @@ def output_prepare_path(config, start_dir):
         cwd2out = os.path.relpath(in2out, start=os.curdir)
         absout = os.path.abspath(cwd2out)
         return absout
+
+
+def merge_json_files(output_path: str, output_filename: str):
+    """Compress many json files into bigger one
+
+    Args:
+        output_path (str):  it is what it is
+        output_filename (str): it also
+    """
+    output_dir = os.path.join(os.getcwd(), output_path)
+    result = list()
+    for dirname, _, filenames in os.walk(output_dir):
+        for filename in filenames:
+            with open(os.path.join(dirname, filename), 'r', encoding='utf-8') as infile:
+                result.extend(json.load(infile))
+
+    with open(os.path.join(output_dir, output_filename), 'w', encoding='utf-8') as output_file:
+        json.dump(result, output_file)
 
 
 def tweet_manager_core(config, app_settings, verbose, overwrite):
