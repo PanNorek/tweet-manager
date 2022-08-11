@@ -2,7 +2,13 @@
 A simple app for collecting tweets from Twitter API by given hashtags or account name
 
 # 📂 Directory Structure
-Here will be directory structure. I promise.
+├───assets
+└───data
+    ├───notepad2
+    ├───src
+    │   └───tweetscrapper
+    └───tests
+       
 
 # 🚀 How to run
 ## Project Setup
