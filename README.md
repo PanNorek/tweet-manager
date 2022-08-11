@@ -49,9 +49,11 @@ And one of these two:
 
 2. Batch mode
 ![Screenshot](/assets/config.png)
+  As you can see - the vast part of parameters can be stored in [DEFAULT] section of config file. The only one thing you have to specify in the jobs is the hashtag or account name.
 
 # 📅 Development Schedule
 - [x] Version 1.0.0 It really works.
 
 # 📧 Contact
-
+  If you find a bug, you have an idea for improvement or you need help, let me know:
+[![](https://img.shields.io/twitter/url?label=/rafal-nojek/&logo=linkedin&logoColor=%230077B5&style=social&url=https%3A%2F%2Fwww.linkedin.com%2in%2rafaln97%2F)](https://www.linkedin.com/in/rafaln97/) [![](https://img.shields.io/twitter/url?label=/PanNorek&logo=github&logoColor=%23292929&style=social&url=https%3A%2F%2Fgithub.com%2FPanNorek)](https://github.com/PanNorek)
