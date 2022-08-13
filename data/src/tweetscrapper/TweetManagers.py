@@ -65,9 +65,11 @@ def get_json_tweets_by_hashtag(
         raise ConnectionError
 
     # Flatten nested dictionary
-    data = [flatten(tweet_data) for tweet_data in response.json()["data"]]
-
-    return data, response.json()["meta"]
+    if "data" in response.json().keys():
+        data = [flatten(tweet_data) for tweet_data in response.json()["data"]]
+        return data, response.json()["meta"]
+    
+    return None, None
 
 
 def get_tweets_by_acc_name(
@@ -99,9 +101,11 @@ def get_tweets_by_acc_name(
         raise ConnectionError
 
     # Flatten nested dictionary
-    data = [flatten(tweet_data) for tweet_data in response.json()["data"]]
-
-    return data, response.json()["meta"]
+    if "data" in response.json().keys():
+        data = [flatten(tweet_data) for tweet_data in response.json()["data"]]
+        return data, response.json()["meta"]
+    
+    return None, None
 
 
 def get_replies(
@@ -136,9 +140,11 @@ def get_replies(
         raise ConnectionError
 
     # Flatten nested dictionary
-    data = [flatten(tweet_data) for tweet_data in response.json()["data"]]
-
-    return data, response.json()["meta"]
+    if "data" in response.json().keys():
+        data = [flatten(tweet_data) for tweet_data in response.json()["data"]]
+        return data, response.json()["meta"]
+    
+    return None, None
 
 
 def get_conversation_ids(data: list) -> list:
@@ -150,7 +156,8 @@ def get_conversation_ids(data: list) -> list:
     Returns:
         list: _description_
     """
-
+    if data is None:
+        return None
     return [tweet['conversation_id'] for tweet in data]
 
 

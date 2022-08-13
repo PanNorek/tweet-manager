@@ -94,7 +94,7 @@ def main():
         tic = time.time()
         for i, config in enumerate(configs):
             tweet_manager_core(config, app_settings, verbose=True, overwrite=True)
-            # time.sleep(0.5)
+            time.sleep(30)
             progress_bar(i + 1, num_configs,
                          msg=f"{config['account_name'] if 'account_name' in config.keys() else config['hashtag']},"
                          f" {'with_replies' if config['all_conversation'] else 'no_replies'} ")  # TODO: -> {result}
@@ -371,31 +371,33 @@ def tweet_manager_core(config, app_settings, verbose, overwrite):
     if config['all_conversation']:
         all_replies = []
         conversation_ids = get_conversation_ids(data)
-        for conversation_id in conversation_ids:
-            replies, _ = get_replies(
-                auth,
-                conversation_id,
-                app_settings['reply_count'],
-                app_settings['lang'])
-            all_replies.append(replies)
+        if conversation_ids is not None:
+            for conversation_id in conversation_ids:
+                replies, _ = get_replies(
+                    auth,
+                    conversation_id,
+                    app_settings['reply_count'],
+                    app_settings['lang'])
+                all_replies.append(replies)
 
-    data.append(all_replies)
+    if data is not None: 
+        data.append(all_replies)
 
-    toc = time.time()
-    cinfo(verbose, 'OK (%.3f seconds)' % (toc - tic))
-    # ============== 3. Write outputs ==============
-    cinfo(verbose, 'Writing output... ', end='', flush=True)
-    tic = time.time()
-    start_dir = os.path.split(config['keys_path'])[0]
-    output_path = output_prepare_path(config, start_dir)
+        toc = time.time()
+        cinfo(verbose, 'OK (%.3f seconds)' % (toc - tic))
+        # ============== 3. Write outputs ==============
+        cinfo(verbose, 'Writing output... ', end='', flush=True)
+        tic = time.time()
+        start_dir = os.path.split(config['keys_path'])[0]
+        output_path = output_prepare_path(config, start_dir)
 
-    with io.open(output_path, 'w', encoding='utf8') as outfile:
-        str_ = json.dumps(data,
-                          indent=4, sort_keys=True,
-                          separators=(',', ': '), ensure_ascii=False)
-        outfile.write((str_))
-    toc = time.time()
-    cinfo(verbose, 'OK (%.3f seconds)' % (toc - tic))
+        with io.open(output_path, 'w', encoding='utf8') as outfile:
+            str_ = json.dumps(data,
+                              indent=4, sort_keys=True,
+                              separators=(',', ': '), ensure_ascii=False)
+            outfile.write((str_))
+        toc = time.time()
+        cinfo(verbose, 'OK (%.3f seconds)' % (toc - tic))
 
 
 if __name__ == '__main__':
