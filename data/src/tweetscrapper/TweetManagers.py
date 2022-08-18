@@ -1,8 +1,11 @@
 from src.tweetscrapper.QueryBuilder import QueryBuilder
-# from src.tweetscrapper.AuthorizationManager import AuthorizationManager
 from typing import Tuple
 import requests
 import collections
+import os
+import json
+import pandas as pd
+
 
 # auth_header = AuthorizationManager('api_keys.json').get_bearer_token()
 # max_results = 10
@@ -11,13 +14,14 @@ import collections
 
 class ConnectionError(Exception):
     """Raised when the TweetManager cannot handle specified query"""
+
     pass
 
 
 # TODO: add documentation to functions
 
 
-def flatten(d, parent_key='', sep='_'):
+def flatten(d, parent_key="", sep="_"):
     """_summary_
 
     Args:
@@ -39,10 +43,8 @@ def flatten(d, parent_key='', sep='_'):
 
 
 def get_json_tweets_by_hashtag(
-    auth_header: dict,
-    hashtag: str,
-    max_results: int,
-        lang: str) -> Tuple[list, dict]:
+    auth_header: dict, hashtag: str, max_results: int, lang: str
+) -> Tuple[list, dict]:
     """_summary_
 
     Args:
@@ -60,23 +62,21 @@ def get_json_tweets_by_hashtag(
     response = requests.get(url, headers=auth_header)
 
     if response.status_code != 200:
-        print('Error for hashtag: {}!'.format(hashtag))
-        print(f'Response failed with code: {response.status_code}')
+        print("Error for hashtag: {}!".format(hashtag))
+        print(f"Response failed with code: {response.status_code}")
         raise ConnectionError
 
     # Flatten nested dictionary
     if "data" in response.json().keys():
         data = [flatten(tweet_data) for tweet_data in response.json()["data"]]
         return data, response.json()["meta"]
-    
+
     return None, None
 
 
 def get_tweets_by_acc_name(
-    auth_header: dict,
-    name: str,
-    max_results: int,
-        lang: str) -> Tuple[list, dict]:
+    auth_header: dict, name: str, max_results: int, lang: str
+) -> Tuple[list, dict]:
     """_summary_
 
     Args:
@@ -96,23 +96,21 @@ def get_tweets_by_acc_name(
     response = requests.get(url, headers=auth_header)
 
     if response.status_code != 200:
-        print('Error for account name: {}!'.format(name))
-        print(f'Response failed with code: {response.status_code}')
+        print("Error for account name: {}!".format(name))
+        print(f"Response failed with code: {response.status_code}")
         raise ConnectionError
 
     # Flatten nested dictionary
     if "data" in response.json().keys():
         data = [flatten(tweet_data) for tweet_data in response.json()["data"]]
         return data, response.json()["meta"]
-    
+
     return None, None
 
 
 def get_replies(
-    auth_header: dict,
-    conversation_id: str,
-    max_results: int,
-        lang: str) -> Tuple[list, dict]:
+    auth_header: dict, conversation_id: str, max_results: int, lang: str
+) -> Tuple[list, dict]:
     """_summary_
 
     Args:
@@ -127,23 +125,22 @@ def get_replies(
     Returns:
         Tuple[list, dict]: _description_
     """
-    url = (QueryBuilder(lang, max_results)
-           .get_replies_from_tweet(
-            conversation_id,
-            max_results))
+    url = QueryBuilder(lang, max_results).get_replies_from_tweet(
+        conversation_id, max_results
+    )
 
     response = requests.get(url, headers=auth_header)
 
     if response.status_code != 200:
-        print('Error for conversation_id {}!'.format(conversation_id))
-        print(f'Response failed with code: {response.status_code}')
+        print("Error for conversation_id {}!".format(conversation_id))
+        print(f"Response failed with code: {response.status_code}")
         raise ConnectionError
 
     # Flatten nested dictionary
     if "data" in response.json().keys():
         data = [flatten(tweet_data) for tweet_data in response.json()["data"]]
         return data, response.json()["meta"]
-    
+
     return None, None
 
 
@@ -158,7 +155,53 @@ def get_conversation_ids(data: list) -> list:
     """
     if data is None:
         return None
-    return [tweet['conversation_id'] for tweet in data]
+    return [tweet["conversation_id"] for tweet in data]
+
+
+def merge_jsons(output_path: str, output_filename: str):
+    """_summary_
+
+    Args:
+        folder_location (str): path to folder where json files are located
+
+    Returns:
+        pd.DataFrame: merged frame
+    """
+    output_dir = os.path.join(os.getcwd(), output_path)
+    frames = []
+    for directory, _, files in os.walk(output_path):
+        for filename in files:
+            tmp = os.path.join(directory, filename)
+
+            # get into files
+            with open(tmp) as json_file:
+                json_data = json.load(json_file)
+
+            records = []
+            for item in json_data:
+                if isinstance(item, list):
+                    for nested_item in item:
+                        if isinstance(nested_item, list):
+                            for nested_nested_item in nested_item:
+                                df = pd.DataFrame(
+                                    nested_nested_item, index=[0]
+                                )  # TODO: perform some sanity checks
+                                records.append(df)
+                        else:
+                            df = pd.DataFrame(nested_item, index=[0])
+                            records.append(df)
+                else:
+                    df = pd.DataFrame(item, index=[0])
+                    records.append(df)
+        frame = pd.concat(records)
+        frames.append(frame)
+
+    big_df = pd.concat(frames)
+
+    with open(
+        os.path.join(output_dir, output_filename), "w", encoding="utf-8"
+    ) as output_file:
+        json.dump(big_df, output_file)
 
 
 def extract_text():
