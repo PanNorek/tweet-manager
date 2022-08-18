@@ -58,7 +58,12 @@ And one of these two:
   As you can see - the vast part of parameters can be stored in [DEFAULT] section of config file. The only one thing you have to specify in the jobs is the hashtag or account name.
 
 # 📅 Development Schedule
-- [x] Version 1.0.0 It really works.
+## Version 1.0.0
+- [x] Beta version (Minimum viable product)
+
+## Version 1.1.0
+- [ ] Merge all json files into big one
+- [ ] Add tool to find current most popular hashtags
 
 # 📧 Contact
   If you find a bug, you have an idea for improvement or you need help, let me know:
