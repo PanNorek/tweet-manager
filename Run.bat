@@ -9,8 +9,10 @@ REM call "%anaconda_root%\Scripts\activate.bat" "%anaconda_root%"
 REM cd data
 REM "%anaconda_root%\python.exe" "main.py" -c _config.ini
 
-set program_root=C:\Users\Admin\AppData\Local\Programs\Python\Python39\python.exe
-call venv\Scripts\activate
+
+REM set path to your venv python.exe location
+set program_root=E:\coding\pythonnew\tweet-manager\venv\Scripts\python.exe
+
 cd data
 "%program_root%" "main.py" -c _config.ini
 
