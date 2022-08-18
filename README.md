@@ -33,7 +33,7 @@ You can paste your keys in the <code>your_api_keys_sample.json</code> file and c
 ## Configuration file – basic informations
 This section contains minimum information that you need to know to quickly run tweet-manager.
 
-Follow these steps to run your first job with CML Calc:
+Follow these steps to run your first job with tweet-manager:
 
 1. Open configuration file (you can simply open it by clicking Edit Configuration File.bat
 2. Specify keys_path as a full (absolute) path to the json file where your Twitter Api keys are stored.
