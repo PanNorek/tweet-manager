@@ -23,7 +23,7 @@ def main():
     # Get config path from arguments
     all_args = sys.argv[1:]
     try:
-        opts, arg = getopt.getopt(all_args, "c:")
+        opts, _ = getopt.getopt(all_args, "c:")
     except getopt.GetoptError:
         opts = []
 
@@ -161,7 +161,7 @@ def config_read(config_path="config.ini", num_params=[]):
 
     """
 
-    config_path = os.path.join(os.getcwd(), "data", config_path)
+    config_path = os.path.join(os.getcwd(), config_path)
 
     if os.path.exists(config_path):
         config_parser = configparser.ConfigParser()

@@ -174,8 +174,10 @@ def merge_jsons(output_path: str, output_filename: str):
             tmp = os.path.join(directory, filename)
 
             # get into files
-            with open(tmp) as json_file:
-                json_data = json.load(json_file)
+            with open(tmp, "r", encoding="utf8") as json_file:
+                if len(json_file.readlines()) != 0:
+                    json_file.seek(0)
+                    json_data = json.load(json_file)
 
             records = []
             for item in json_data:
@@ -197,11 +199,15 @@ def merge_jsons(output_path: str, output_filename: str):
         frames.append(frame)
 
     big_df = pd.concat(frames)
-
-    with open(
-        os.path.join(output_dir, output_filename), "w", encoding="utf-8"
-    ) as output_file:
-        json.dump(big_df, output_file)
+    try:
+        (
+            big_df.reset_index(drop=True).to_json(
+                os.path.join(output_dir, output_filename), orient="columns"
+            )
+        )
+        return True
+    except Exception:
+        return False
 
 
 def extract_text():
