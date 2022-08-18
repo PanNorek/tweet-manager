@@ -17,8 +17,11 @@ A simple app for collecting tweets from Twitter API by given hashtags or account
 <li>Activate the virtual environment by running <code> venv/bin/activate </code>
 <li>On Windows use <code> venv\Scripts\activate.bat </code>
 <li>Install the dependencies using <code> pip install -r requirements.txt </code>
-<li>Run application using <code>python main.py </code>
-<li>Run the test module using <code>python -m unittest</code>
+<li>Open Edit Configuration File to configure your setup.
+<li>Edit Run.bat file to specify your python path.
+<li>Double click Run.bat file and enjoy!
+
+<li>You can check unittests by switching folder from root to data and typing <code>python -m unittest </code>
 
 ## Twitter developer account
 1. Login to your account on Twitter <a>https://twitter.com/login</a>
