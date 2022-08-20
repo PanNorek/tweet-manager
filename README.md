@@ -65,7 +65,7 @@ And one of these two:
 - [x] Beta version (Minimum viable product)
 
 ## Version 1.1.0
-- [ ] Merge all json files into big one
+- [x] Merge all json files into big one
 - [ ] Add tool to find current most popular hashtags
 
 # 📧 Contact
